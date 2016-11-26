@@ -73,7 +73,7 @@ SNAP="$1"
 echo "Backing up '$SNAP'"
 for SRCPOOL in $SRCPOOLS
 do
-	for SRCDATASET in $("$ZFS" list -rH "$SRCPOOL" | "$AWK" '{ print $1 }' | grep -v '^/zroot/x201')
+	for SRCDATASET in $("$ZFS" list -rH "$SRCPOOL" | "$AWK" '{ print $1 }')
 	do
 		echo "Sending '$SRCDATASET@$SNAP'" >&2
 		"$ZFS" send $IFLAG "$SRCDATASET@$SNAP" | "$ZFS" receive "$TGTDATASET/$SRCDATASET@$SNAP"
