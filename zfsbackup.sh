@@ -62,6 +62,7 @@ fi
 case "$#" in
 1)	;;
 2)	IFLAG="-i $1"
+	shift
 	;;
 *)	echo "usage: zfsbackup.sh [snapshot] snapshot" >&2
 	exit 1
@@ -76,6 +77,6 @@ do
 	for SRCDATASET in $("$ZFS" list -rH "$SRCPOOL" | "$AWK" '{ print $1 }')
 	do
 		echo "Sending '$SRCDATASET@$SNAP'" >&2
-		"$ZFS" send $IFLAG "$SRCDATASET@$SNAP" | "$ZFS" receive "$TGTDATASET/$SRCDATASET@$SNAP"
+		"$ZFS" send $IFLAG "$SRCDATASET@$SNAP" | "$ZFS" receive -F "$TGTDATASET/$SRCDATASET@$SNAP"
 	done
 done
