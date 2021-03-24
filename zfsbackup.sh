@@ -61,7 +61,7 @@ fi
 # Everything seems fine so far, let's have a look at the parameters...
 case "$#" in
 1)	;;
-2)	IFLAG="-i $1"
+2)	IFLAG="-i @$1"
 	shift
 	;;
 *)	echo "usage: zfsbackup.sh [snapshot] snapshot" >&2
