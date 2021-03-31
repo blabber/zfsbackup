@@ -9,10 +9,12 @@
 ZPOOL='/sbin/zpool'
 ZFS='/sbin/zfs'
 AWK='/usr/bin/awk'
-GREP='/usr/bin/grep'
+GREP='/usr/bin/egrep'
 
 # Variables to set in ~/.zfsbackup:
-# SRCPOOLS - a space seperated list of pools that should be backed up
+# SRCPOOLS   - a space seperated list of pools that should be backed up
+# IGNORES    - a space seperated list of extended regular expressions,
+#              describing datasets that will not be backed up
 # TGTDATASET - the dataset that should receive the backups
 if ! [ -r "$HOME/.zfsbackup" ]
 then
@@ -74,7 +76,15 @@ SNAP="$1"
 echo "Backing up '$SNAP'"
 for SRCPOOL in $SRCPOOLS
 do
-	for SRCDATASET in $("$ZFS" list -rH -o name "$SRCPOOL")
+	SRCDATASETS=$("$ZFS" list -rH -o name "$SRCPOOL")
+
+	for IGNORE in $IGNORES
+	do
+		SRCDATASETS=$(echo "$SRCDATASETS" \
+			| "$GREP" -v "$IGNORE")
+	done
+
+	for SRCDATASET in $SRCDATASETS
 	do
 		echo "Sending '$SRCDATASET@$SNAP'" >&2
 		"$ZFS" send $IFLAG "$SRCDATASET@$SNAP" | "$ZFS" receive -F "$TGTDATASET/$SRCDATASET@$SNAP"
